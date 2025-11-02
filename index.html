@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습과학 6단계 학습 모형 퀴즈</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Inter 폰트 적용 (Tailwind의 기본 폰트) */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* 라디오 버튼 선택 시 배경색 변경을 위한 커스텀 스타일 */
+        input[type="radio"]:checked + label {
+            background-color: #e0f2fe; /* light-blue-100 */
+            border-color: #3b82f6; /* blue-500 */
+        }
+        /* 피드백 영역 기본 숨김 */
+        .feedback {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container max-w-4xl mx-auto bg-white shadow-2xl rounded-2xl p-8 md:p-12 my-10">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-blue-700 mb-3">학습과학 6단계 학습 모형 퀴즈</h1>
+            <p class="text-lg text-gray-600">책의 내용을 얼마나 잘 이해했는지 확인해 보세요.</p>
+        </header>
+
+        <!-- 채점 결과 표시 영역 -->
+        <div id="results" class="hidden text-center text-3xl font-bold p-8 bg-blue-100 border-4 border-blue-300 rounded-lg mb-10 shadow-inner">
+            <!-- JS로 점수 표시 -->
+        </div>
+
+        <form id="quizForm">
+            <!-- 퀴즈 문항이 여기에 삽입됩니다 -->
+        </form>
+
+        <button type="submit" form="quizForm" class="w-full bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-2xl hover:bg-blue-700 transition-all duration-300 shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 mt-10">
+            제출하기
+        </button>
+    </div>
+
+    <script>
+        // 퀴즈 데이터
+        const quizData = [
+            // 서문
+            {
+                chapter: "서문: 왜 학습 모형인가?",
+                question: "1. 서문에서 언급된 학습과학의 6가지 주요 교육 전략에 포함되지 않는 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "분산연습" },
+                    { value: "B", text: "인출연습" },
+                    { value: "C", text: "기계적인 반복 암기" },
+                    { value: "D", text: "이중부호화" },
+                    { value: "E", text: "정교화" }
+                ],
+                correct: "C",
+                explanation: "서문에 따르면 6가지 주요 전략은 분산연습, 교차연습, 인출연습, 피드백을 통한 개선, 이중부호화, 정교화입니다. 단순하고 기계적인 반복 암기는 이와 다릅니다."
+            },
+            {
+                chapter: "서문: 왜 학습 모형인가?",
+                question: "2. 서문에서 지적하는 일반적인 수업 설계의 문제는 무엇인가요?",
+                options: [
+                    { value: "A", text: "학생의 학습이 아닌 교사의 가르침에 초점이 맞춰져 있다." },
+                    { value: "B", text: "너무 많은 기술을 사용한다." },
+                    { value: "C", text: "숙제가 너무 많다." },
+                    { value: "D", text: "학생들에게 너무 많은 선택권을 준다." },
+                    { value: "E", text: "학습과학을 지나치게 신뢰한다." }
+                ],
+                correct: "A",
+                explanation: "문제는 교사가 자신의 강의 계획을 중심으로만 수업을 설계하며, 수업의 초점이 학생의 학습이 아닌 교사의 가르침에 있는 경우가 많다고 지적합니다."
+            },
+            {
+                chapter: "서문: 왜 학습 모형인가?",
+                question: "3. 이 책에서 '모형'을 '프레임워크'와 구별하는 방식은 무엇인가요?",
+                options: [
+                    { value: "A", text: "모형은 서술적(무엇), 프레임워크는 절차적(방법) 지식을 다룬다." },
+                    { value: "B", text: "모형은 절차적(방법), 프레임워크는 서술적(무엇) 지식을 다룬다." },
+                    { value: "C", text: "모형은 교사를 위한 것, 프레임워크는 학생을 위한 것이다." },
+                    { value: "D", text: "모형은 오래된 것, 프레임워크는 새로운 것이다." },
+                    { value: "E", text: "둘 사이에는 아무런 차이가 없다." }
+                ],
+                correct: "B",
+                explanation: "모형은 '어떻게' 작동하는지에 대한 인지적 표상(절차적 지식)을 제공하는 반면, 프레임워크는 '무엇'을 해야 하는지에 대한 범주(서술적 지식)를 체계화한다고 설명합니다."
+            },
+            {
+                chapter: "서문: 왜 학습 모형인가?",
+                question: "4. 학습과학의 핵심 통찰로 언급된 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "핵심 아이디어를 추출하여 인지모형으로 조직화할 때 가장 잘 배운다." },
+                    { value: "B", text: "조용히 교사의 설명을 듣기만 할 때 가장 잘 배운다." },
+                    { value: "C", text: "강력한 외적 보상이 주어질 때 가장 잘 배운다." },
+                    { value: "D", text: "가능한 한 많은 정보를 한꺼번에 받아들일 때 가장 잘 배운다." },
+                    { value: "E", text: "사전 지식 없이 배울 때 가장 잘 배운다." }
+                ],
+                correct: "A",
+                explanation: "학습과학의 핵심 통찰은 '새로운 자료에서 핵심 아이디어를 추출하여 인지모형으로 조직화활 때 가장 잘 배운다'는 것입니다."
+            },
+            {
+                chapter: "서문: 왜 학습 모형인가?",
+                question: "5. 이 책에서 말하는 흥미롭고 즐거운 학습 경험을 제공하는 주요 원동력은 무엇인가요?",
+                options: [
+                    { value: "A", text: "외적 보상" },
+                    { value: "B", text: "엄격한 규율" },
+                    { value: "C", text: "최신 기술" },
+                    { value: "D", text: "경쟁" },
+                    { value: "E", text: "호기심" }
+                ],
+                correct: "E",
+                explanation: "이 책은 '흥미롭고 즐거운 학습 경험을 제공하는 주요 원동력'이 '호기심'이라고 말합니다."
+            },
+
+            // 1장
+            {
+                chapter: "1장 학습과학에 대한 이해",
+                question: "6. 정보처리 모형에서 기억이 장기기억으로 가는 올바른 순서는 무엇인가요?",
+                options: [
+                    { value: "A", text: "감각등록기 -> 장기기억 -> 단기 작업기억" },
+                    { value: "B", text: "단기 작업기억 -> 감각등록기 -> 장기기억" },
+                    { value: "C", text: "감각등록기 -> 순간기억 -> 단기 작업기억 -> 장기기억" },
+                    { value: "D", text: "장기기억 -> 단기 작업기억 -> 순간기억" },
+                    { value: "E", text: "감각등록기 -> 절차적 기억 -> 단기 작업기억" }
+                ],
+                correct: "C",
+                explanation: "정보처리 모형은 감각등록기를 통과한 자극이 순간기억, (단기) 작업기억을 거쳐 장기기억에 도달하는 과정을 설명합니다."
+            },
+            {
+                chapter: "1장 학습과학에 대한 이해",
+                question: "7. '감각등록기'의 주요 역할은 무엇인가요?",
+                options: [
+                    { value: "A", text: "모든 감각 정보를 영구적으로 저장" },
+                    { value: "B", text: "방해 요소를 차단하고 중요한 자극에만 집중하도록 필터링" },
+                    { value: "C", text: "정보를 7개 단위(청크)로 묶음" },
+                    { value: "D", text: "수면 중에 기억을 정리" },
+                    { value: "E", text: "자전거 타기 같은 절차적 기억을 형성" }
+                ],
+                correct: "B",
+                explanation: "감각등록기는 대부분의 자극을 1초 이내에 버리고, 방해 요소를 차단하며 가장 중요한 자극에 집중하는 데 필수적인 필터 역할을 합니다."
+            },
+            {
+                chapter: "1장 학습과학에 대한 이해",
+                question: "8. '단기 작업기억'의 특징으로 올바른 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "용량이 무제한이다." },
+                    { value: "B", text: "약 30초 정도만 지속된다." },
+                    { value: "C", text: "한 번에 약 4~7개의 정보 단위를 처리할 수 있다." },
+                    { value: "D", text: "약 5~20분간 지속되며 의식적 노력이 중요하다." },
+                    { value: "E", text: "주로 수면 중에 활성화된다." }
+                ],
+                correct: "D",
+                explanation: "단기 작업기억은 의식적 노력이 중요하며 5~20분 정도 지속되다가 사라지거나 장기기억으로 이어진다고 설명합니다. (참고: 30초와 4-7 청크는 '순간기억'의 특징으로 함께 언급됩니다.)"
+            },
+            {
+                chapter: "1장 학습과학에 대한 이해",
+                question: "9. 정보가 장기기억으로 저장되는 과정에서 매우 중요한 역할을 하는 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "수면" },
+                    { value: "B", text: "소음" },
+                    { value: "C", text: "경쟁" },
+                    { value: "D", text: "무시하기" },
+                    { value: "E", text: "감각 차단" }
+                ],
+                correct: "A",
+                explanation: "장기기억에 도달하는 과정에서 '수면'이 중요하며, 그날의 사건을 분류하고 조직화하여 중요한 것을 남기고 연결 고리를 구축한다고 언급됩니다."
+            },
+            {
+                chapter: "1장 학습과학에 대한 이해",
+                question: "10. 6단계 학습 모형 중 '관심 갖기'와 '학습에 전념하기'는 기억의 어떤 단계와 주로 관련되나요?",
+                options: [
+                    { value: "A", text: "장기기억" },
+                    { value: "B", text: "절차적 기억" },
+                    { value: "C", text: "감각등록기와 순간기억" },
+                    { value: "D", text: "기억 인출" },
+                    { value: "E", text: "기억 망각" }
+                ],
+                correct: "C",
+                explanation: "감각등록기에서 순간기억으로 가기 위한 핵심 학습 단계로 '관심 갖기'와 '학습에 전념하기'가 제시됩니다."
+            },
+
+            // 2장
+            {
+                chapter: "2장 관심 갖기",
+                question: "11. 뇌가 감각 정보를 처리할 때 우선순위를 두는 자극이 아닌 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "감정가 (강렬한 감정을 불러일으키는 것)" },
+                    { value: "B", text: "새로움 (새롭고 역동적인 것)" },
+                    { value: "C", text: "호기심 (신기하거나 궁금증을 유발하는 것)" },
+                    { value: "D", text: "익숙함 (오래되고 변화가 없는 것)" },
+                    { value: "E", text: "놀랍거나 의외의 것" }
+                ],
+                correct: "D",
+                explanation: "뇌는 새롭고 역동적인 것에 주의를 기울이고, 오래되었거나 변화가 없는 정적인 것은 무시하는 경향이 있습니다. 따라서 '익숙함'은 우선순위가 아닙니다."
+            },
+            {
+                chapter: "2장 관심 갖기",
+                question: "12. '코끼리와 기수' 비유에서 '코끼리'가 상징하는 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "논리와 의식적 사고 (전전두피질)" },
+                    { value: "B", text: "감정과 무의식적 반응 (변연계)" },
+                    { value: "C", text: "교사의 지시" },
+                    { value: "D", text: "장기기억" },
+                    { value: "E", text: "육체적 힘" }
+                ],
+                correct: "B",
+                explanation: "'코끼리'는 감정 및 환경에 대한 무의식적 반응을 담당하는 원시적인 변연계를, '기수'는 논리와 의식적 사고를 담당하는 전전두피질을 상징하며, 코끼리(감정)가 기수(논리)보다 훨씬 강력하다고 설명합니다."
+            },
+            {
+                chapter: "2장 관심 갖기",
+                question: "13. 학생들이 자신의 지식 공백을 인식하게 하여 학습을 촉진하는 '정확성 피드백'의 예는 무엇인가요?",
+                options: [
+                    { value: "A", text: "학생들에게 정답을 미리 알려주는 것" },
+                    { value: "B", text: "학생이 추측한 것이 틀렸음을 알게 하여 배움을 촉진하는 것" },
+                    { value: "C", text: "틀린 추측을 해도 지적하지 않고 넘어가는 것" },
+                    { value: "D", text: "학생들에게 긍정적인 말만 해주는 것" },
+                    { value: "E", text: "추측할 기회를 아예 주지 않는 것" }
+                ],
+                correct: "B",
+                explanation: "'정확성 피드백'은 어떤 것을 추측하고 나서 그 추측이 틀렸다는 것을 알게 됨으로써 자신의 정보 공백을 인식하고 배움이 촉진되는 것을 의미합니다."
+            },
+            {
+                chapter: "2장 관심 갖기",
+                question: "14. 높은 기대치를 요구하면서도 따뜻한 지원과 신뢰를 통해 학생들을 돕는 교사를 무엇이라고 하나요?",
+                options: [
+                    { value: "A", text: "위드잇니스(Withitness)" },
+                    { value: "B", text: "따뜻한 요구자 (Warm Demander)" },
+                    { value: "C", text: "선행 조직자" },
+                    { value: "D", text: "기준점 현상" },
+                    { value: "E", text: "행복한 무지증후군" }
+                ],
+                correct: "B",
+                explanation: "'따뜻한 요구자'는 학생들에게 높은 기대치를 요구하면서도 따뜻한 지원과 신뢰, 체계적 규율을 통해 그 기대에 도달하도록 돕는 교사를 의미합니다."
+            },
+            {
+                chapter: "2장 관심 갖기",
+                question: "15. 학생들이 10분쯤 지나 집중력을 잃기 쉬울 때, 교사가 학생들의 관심을 붙들어 두기 위한 방법으로 적절하지 않은 것은?",
+                options: [
+                    { value: "A", text: "이야기를 들려준다." },
+                    { value: "B", text: "감정을 불러일으키는 상황을 만든다." },
+                    { value: "C", text: "예상치 못한 일로 변화를 준다." },
+                    { value: "D", text: "진도를 나가야 하므로 무시하고 계속 설명한다." },
+                    { value: "E", text: "학습 내용과 관련된 재미있는 요소나 생동감을 준다." }
+                ],
+                correct: "D",
+                explanation: "학생들은 10분쯤 지나면 집중력을 잃기 쉬우므로, 변화를 주어 관심을 계속 붙들어 두어야 합니다. 진도에 대한 압박감으로 이를 무시하는 것은 효과적이지 않습니다."
+            },
+
+            // 3장
+            {
+                chapter: "3장 학습에 전념하기",
+                question: "16. 대니얼 카너먼이 설명한 뇌의 두 가지 운영 시스템 중 '느린 사고를 하는 뇌(시스템 2)'의 특징은 무엇인가요?",
+                options: [
+                    { value: "A", text: "즉각적이고 자동적으로 작동한다." },
+                    { value: "B", text: "거의 노력이 필요 없다." },
+                    { value: "C", text: "복잡한 문제 해결을 담당하며, 주요 특징이 '게으름'이다." },
+                    { value: "D", text: "항상 '빠른 사고를 하는 뇌'보다 먼저 작동한다." },
+                    { value: "E", text: "감정적인 반응을 주로 처리한다." }
+                ],
+                correct: "C",
+                explanation: "'느린 사고를 하는 뇌'는 주의를 기울여야 하며, 복잡한 문제 해결과 신중한 사고를 담당하고, 주요 특징이 '게으름'이라 꼭 필요한 것 이상으로 노력하려 하지 않는다고 설명합니다."
+            },
+            {
+                chapter: "3장 학습에 전념하기",
+                question: "17. 제레 브로피가 제시한 학생 참여 공식 (학생 참여 = 기대치 X 가치)에서 '가치'에 해당하지 않는 것은?",
+                options: [
+                    { value: "A", text: "배우고 싶다 (흥미)" },
+                    { value: "B", text: "배울 필요가 있다 (유용)" },
+                    { value: "C", text: "마땅히 배워야 한다 (이타적)" },
+                    { value: "D", text: "배우기 쉽다 (난이도)" },
+                    { value: "E", text: "중요하기 때문이다" }
+                ],
+                correct: "D",
+                explanation: "뇌에 계속할 만한 가치가 있다는 확신을 심어주기 위해 '흥미롭거나(흥미)', '유용하거나(유용)', '도움이 되거나(이타적)' '중요하기' 때문이라는 가치를 느껴야 한다고 했습니다. '배우기 쉽다'는 '기대치'와 더 관련이 있습니다."
+            },
+            {
+                chapter: "3장 학습에 전념하기",
+                question: "18. '학습 목표'와 '성과 목표' 중, 실패를 긍정적 학습 기회로 받아들이고 계속 노력하는 경향을 보이는 목표는 무엇인가요?",
+                options: [
+                    { value: "A", text: "성과 목표 (똑똑해 보이고 싶은 욕구)" },
+                    { value: "B", text: "학습 목표 (새로운 기술을 숙달하려는 욕구)" },
+                    { value: "C", text: "외적 목표 (보상을 받으려는 욕구)" },
+                    { value: "D", text: "단기 목표" },
+                    { value: "E", text: "장기 목표" }
+                ],
+                correct: "B",
+                explanation: "'학습 목표'를 채택한 학생들은 실패를 대수롭지 않게 받아들이고 목표를 달성하기 위해 계속 노력하는 경향을 보입니다. 반면 '성과 목표'에 집중하면 결과에만 집중하게 됩니다."
+            },
+            {
+                chapter: "3장 학습에 전념하기",
+                question: "19. 학생들이 자신의 인생 결과를 스스로 결정할 수 있다고 믿는 감각을 무엇이라고 하나요?",
+                options: [
+                    { value: "A", text: "학습된 무기력" },
+                    { value: "B", text: "내적 통제감" },
+                    { value: "C", text: "외적 보상" },
+                    { value: "D", text: "인지적 갈등" },
+                    { value: "E", text: "K-W-L 차트" }
+                ],
+                correct: "B",
+                explanation: "학생이 자신의 인생 결과를 스스로 결정할 수 있다고 믿는 것을 '내적 통제감'이라고 하며, 이는 '학습된 낙관주의'와 연결됩니다. 반대는 '학습된 무기력'입니다."
+            },
+            {
+                chapter: "3장 학습에 전념하기",
+                question: "20. 학생들의 '내적 통제감'과 '학습된 낙관주의'를 길러주기 위한 효과적인 방법은 무엇인가요?",
+                options: [
+                    { value: "A", text: "아주 어렵고 장기적인 목표만 제시한다." },
+                    { value: "B", text: "실패했을 때 즉시 외적 보상을 준다." },
+                    { value: "C", text: "작은 성공을 쌓아갈 수 있도록 단기 학습 목표를 제공한다." },
+                    { value: "D", text: "운이나 우연의 중요성을 강조한다." },
+                    { value: "E", text: "학습 목표를 교사가 모두 정해준다." }
+                ],
+                correct: "C",
+                explanation: "단기 학습 목표를 제시하고 작은 목표를 달성하게 하면, 노력으로 어려움을 극복할 수 있다는 믿음(내적 통제감)을 키우는 데 도움이 됩니다."
+            },
+
+            // 4장
+            {
+                chapter: "4장 새로운 학습에 집중하기",
+                question: "21. 작업기억의 세 가지 주요 시스템 중 '시각적 이미지'와 '방향'을 처리하는 시스템은 무엇인가요?",
+                options: [
+                    { value: "A", text: "음운 고리" },
+                    { value: "B", text: "시공간 잡기장" },
+                    { value: "C", text: "중앙 집행기" },
+                    { value: "D", text: "일화 완충기" },
+                    { value: "E", text: "감각등록기" }
+                ],
+                correct: "B",
+                explanation: "'시공간 잡기장'이 시각적 이미지와 방향을 처리하고, '음운 고리'는 글이나 말을 처리하며, '중앙 집행기'는 이 둘을 조율합니다."
+            },
+            {
+                chapter: "4장 새로운 학습에 집중하기",
+                question: "22. '이중부호화 이론'에 따라 학습 효과를 높이는 방법은 무엇인가요?",
+                options: [
+                    { value: "A", text: "글로만 설명한다." },
+                    { value: "B", text: "이미지로만 보여준다." },
+                    { value: "C", text: "추상적인 개념을 구체적인 사례나 이미지와 함께 언어로 설명한다." },
+                    { value: "D", text: "두 가지 다른 언어로 설명한다." },
+                    { value: "E", text: "학생 두 명이 함께 공부하게 한다." }
+                ],
+                correct: "C",
+                explanation: "이중부호화 이론은 작업기억의 2개 채널(음운, 시공간)을 활용하여, 추상적 개념을 언어로 설명할 때 구체적인 사례나 이미지로 시각적으로 설명하면 더 잘 이해한다는 것입니다."
+            },
+            {
+                chapter: "4장 새로운 학습에 집중하기",
+                question: "23. 학습자가 학습할 때 의도적으로 도입된 어려움이 장기적인 학습 효과를 향상시킬 수 있다는 이론은 무엇인가요?",
+                options: [
+                    { value: "A", text: "바람직한 어려움" },
+                    { value: "B", text: "인지 과부하" },
+                    { value: "C", text: "이중부호화" },
+                    { value: "D", text: "자기 질문" },
+                    { value: "E", text: "학습된 무기력" }
+                ],
+                correct: "A",
+                explanation: "'바람직한 어려움'은 학습에 작은 장애물을 추가하면 학습 속도는 느려지지만 이해력과 기억력이 향상된다는 이론입니다. 손 필기가 타이핑보다 효과적인 이유 중 하나입니다."
+            },
+            {
+                chapter: "4장 새로운 학습에 집중하기",
+                question: "24. 절차적 학습에서 학생이 새로운 학습에 집중하도록 돕는 효과적인 'I do - We do - You do' 전략의 예로 적절한 것은?",
+                options: [
+                    { value: "A", text: "학생들에게 처음부터 끝까지 혼자 하도록 맡긴다. (You do)" },
+                    { value: "B", text: "교사가 시범을 보이고(I do), 함께 연습한 후(We do), 학생 스스로 하도록(You do) 한다." },
+                    { value: "C", text: "교사가 말로만 지시하고 학생이 바로 따라 하도록 한다." },
+                    { value: "D", text: "학생들끼리만 함께 연습하도록 한다. (We do)" },
+                    { value: "E", text: "교사가 시범만 보이고(I do) 바로 평가한다." }
+                ],
+                correct: "B",
+                explanation: "효과적인 전략은 교사가 먼저 숙달학습이 어떤 것인지 시범을 보이고(I do), 학생들과 함께 연습하며(We do), 점차 풀이된 예제 제공을 줄여 학생이 독립적으로 풀도록(You do) 하는 것입니다."
+            },
+            {
+                chapter: "4장 새로운 학습에 집중하기",
+                question: "25. 노트 필기가 학습에 긍정적인 이유로 가장 적절한 것은?",
+                options: [
+                    { value: "A", text: "필기된 내용 자체가 완벽한 교과서가 되기 때문이다." },
+                    { value: "B", text: "타이핑보다 훨씬 빠르게 기록할 수 있기 때문이다." },
+                    { value: "C", text: "필기하는 '과정'에서 핵심 아이디어를 요약하는 등 깊은 학습을 하기 때문이다." },
+                    { value: "D", text: "뇌의 시각 처리 중추를 전혀 사용하지 않기 때문이다." },
+                    { value: "E", text: "다른 학생의 노트를 그대로 베낄 수 있기 때문이다." }
+                ],
+                correct: "C",
+                explanation: "노트 필기는 단순히 기록하는 것이 아니라, 핵심 아이디어를 자신의 말로 요약하는 등 더 깊은 학습을 요구합니다. 중요한 것은 '필기된 내용 자체가 아니라 필기하는 과정'입니다."
+            },
+
+            // 5장
+            {
+                chapter: "5장 학습 이해하기",
+                question: "26. 뇌가 정보를 받아들여 나중에 접근할 수 있는 기억 흔적으로 저장하는 과정을 무엇이라고 하나요?",
+                options: [
+                    { value: "A", text: "부호화" },
+                    { value: "B", text: "인출" },
+                    { value: "C", text: "망각" },
+                    { value: "D", text: "청킹" },
+                    { value: "E", text: "필터링" }
+                ],
+                correct: "A",
+                explanation: "'부호화'는 뇌가 새로운 정보를 받아들여 나중에 다시 접근할 수 있는 시각적 및 언어적 형태의 기억 흔적으로 저장하는 과정입니다."
+            },
+            {
+                chapter: "5장 학습 이해하기",
+                question: "27. 가장 정교하게 부호화되어 기억에 오래 남는 방식은 무엇인가요?",
+                options: [
+                    { value: "A", text: "구조 부호화 (단어의 형태 처리)" },
+                    { value: "B", text: "음소 부호화 (단어의 소리 처리)" },
+                    { value: "C", text: "의미 부호화 (단어의 의미와 개인적 경험 연결)" },
+                    { value: "D", text: "단순 반복 부호화 (의미 없이 반복)" },
+                    { value: "E", text: "무작위 부호화" }
+                ],
+                correct: "C",
+                explanation: "접하는 것을 더 정교하게 부호화할수록, 특히 개인적 경험과 연결하는 '의미 부호화'를 할 때 훨씬 더 잘 기억한다고 설명합니다."
+            },
+            {
+                chapter: "5장 학습 이해하기",
+                question: "28. 작업 기억의 용량 한계(약 4~7개)를 극복하기 위해, 정보 조각들을 더 크고 의미 있는 패턴으로 묶는 방식을 무엇이라고 하나요?",
+                options: [
+                    { value: "A", text: "발견학습" },
+                    { value: "B", text: "청킹(Chunking)" },
+                    { value: "C", text: "뇌 휴식" },
+                    { value: "D", text: "오개념" },
+                    { value: "E", text: "손 들기" }
+                ],
+                correct: "B",
+                explanation: "작업 기억은 서로 다른 정보 조각들을 더 크고 의미 있는 패턴으로 '묶어내는(청킹)' 방식으로 작동하여 용량 한계를 극복하려 합니다."
+            },
+            {
+                chapter: "5장 학습 이해하기",
+                question: "29. 교사가 질문을 한 후 3초 이상 기다려줄 때 나타나는 효과로 올바른 것은?",
+                options: [
+                    { value: "A", text: "학생들의 답변이 3배에서 7배 길어지고 풍부해진다." },
+                    { value: "B", text: "수업 분위기가 산만해진다." },
+                    { value: "C", text: "항상 손을 들던 학생들만 대답하게 된다." },
+                    { value: "D", text: "학생들이 질문을 무시하게 된다." },
+                    { value: "E", text: "교사의 권위가 떨어진다." }
+                ],
+                correct: "A",
+                explanation: "교사가 질문 후 3초 이상 기다려줄 때, 학생들의 답변이 평소보다 3배에서 7배 길어지며, 평소 눈에 띄지 않던 학생들도 대화에 참여하게 됩니다."
+            },
+            {
+                chapter: "5장 학습 이해하기",
+                question: "30. 협동학습 전략이 가장 효과적인 시점은 언제인가요?",
+                options: [
+                    { value: "A", text: "학생들에게 완전히 새로운 개념을 처음 소개할 때" },
+                    { value: "B", text: "학생들이 방금 배운 내용을 처리하고 정리하는 '학습 이해하기' 단계" },
+                    { value: "C", text: "수업 시작 전 아이스브레이킹을 할 때" },
+                    { value: "D", text: "개인별 암기 시험을 볼 때" },
+                    { value: "E", text: "협동학습은 어떠한 경우에도 효과적이지 않다." }
+                ],
+                correct: "B",
+                explanation: "협동학습은 새로운 내용을 배울 때(직접 교수법이 더 효과적)보다는, 이미 배운 내용을 또래와 함께 처리하고 이해하는 '학습 이해하기' 단계에서 가장 효과적입니다."
+            },
+            
+            // 6장
+            {
+                chapter: "6장 연습 및 성찰하기",
+                question: "31. '벼락치기(집중연습)'가 장기기억에 비효율적인 이유는 무엇인가요?",
+                options: [
+                    { value: "A", text: "정보의 '저장'에는 도움이 되지만 '인출'을 방해하기 때문" },
+                    { value: "B", text: "정보의 '인출'은 촉진하지만 '저장'에는 도움이 되지 않아 '알고 있다는 착각'을 주기 때문" },
+                    { value: "C", text: "너무 많은 시간을 소모하기 때문" },
+                    { value: "D", text: "교차연습의 한 형태이기 때문" },
+                    { value: "E", "text": "신경 경로 주위에 미엘린을 형성하기 때문" }
+                ],
+                correct: "B",
+                explanation: "벼락치기(집중연습)는 단기적인 인출을 촉진할 수는 있지만, 장기적인 저장에는 도움이 되지 않으며, 머릿속에 알고 있다는 착각을 불러일으킬 뿐이라고 설명합니다."
+            },
+            {
+                chapter: "6장 연습 및 성찰하기",
+                question: "32. 한 번의 연습 시간에 다양한 유형의 문제를 섞어서 연습하는 방식(예: 다양한 위치에서 슛 연습)을 무엇이라고 하나요?",
+                options: [
+                    { value: "A", text: "블록연습 (집중연습)" },
+                    { value: "B", text: "교차연습 (혼합연습)" },
+                    { value: "C", text: "인출연습" },
+                    { value: "D", text: "의도적인 연습" },
+                    { value: "E", text: "벼락치기" }
+                ],
+                correct: "B",
+                explanation: "'교차연습'은 한 번의 연습 시간 동안 다양한 기술이나 문제 유형을 섞어서 연습하는 것으로, 초기 학습 속도는 느려도 장기적으로 더 나은 성과를 얻습니다. (블록연습은 같은 것만 반복)"
+            },
+            {
+                chapter: "6장 연습 및 성찰하기",
+                question: "33. 학습 내용을 단순히 '다시 읽기'보다 '퀴즈'를 통해 떠올리는 연습이 더 효과적인 이유는 무엇인가요? (인출연습)",
+                options: [
+                    { value: "A", text: "다시 읽기가 동일 신경망을 재활성화할 뿐이지만, 인출연습은 신경망을 더 강력하게 활성화하기 때문" },
+                    { value: "B", text: "퀴즈가 다시 읽기보다 시간이 덜 걸리기 때문" },
+                    { value: "C", text: "다시 읽기는 '바람직한 어려움'을 유발하기 때문" },
+                    { value: "D", text: "퀴즈는 항상 외적 보상과 연결되기 때문" },
+                    { value: "E", text: "다시 읽기가 더 적극적인 학습 활동이기 때문" }
+                ],
+                correct: "A",
+                explanation: "인출연습(퀴즈)이 단순히 다시 읽기보다 신경망을 더 강력하게 활성화하며, 다시 읽기는 '알고 있다는 착각'을 불러일으킬 뿐이라고 합니다."
+            },
+            {
+                chapter: "6장 연습 및 성찰하기",
+                question: "34. 전문가들이 수행하는 '의도적인 연습'의 핵심 특징은 무엇인가요?",
+                options: [
+                    { value: "A", text: "자신이 잘하는 것을 반복하여 자신감을 얻는 것" },
+                    { value: "B", text: "연습 시간을 무조건 10,000시간 채우는 것" },
+                    { value: "C", text: "자신의 약점(버그)을 파악하고, 이를 개선하는 데 집중하는 것" },
+                    { value: "D", text: "피드백을 받지 않고 혼자 연습하는 것" },
+                    { value: "E", text: "가장 쉽고 즐거운 연습만 골라서 하는 것" }
+                ],
+                correct: "C",
+                explanation: "의도적인 연습은 단순 반복이 아니며, 자신의 약점과 부족한 부분을 명확히 파악하고, 상당한 노력으로 현재 수준과 목표 수준의 간격을 줄이려 시도하는 것입니다."
+            },
+            {
+                chapter: "6장 연습 및 성찰하기",
+                question: "35. 학생에게 제공하는 효과적인 형성적 피드백의 특징이 아닌 것은?",
+                options: [
+                    { value: "A", text: "구체적이고 실행 가능하다." },
+                    { value: "B", text: "평가하거나 판단하지 않는다. (예: \"형편없네\")" },
+                    { value: "C", text: "학생의 학습 동기를 꺾기 위해 강압적이어야 한다." },
+                    { value: "D", text: "학생이 스스로 생각하게 한다. (예: \"...기억나니?\")" },
+                    { value: "E", text: "연습 중 또는 연습 직후에 제공하는 것이 좋다." }
+                ],
+                correct: "C",
+                explanation: "효과적인 피드백은 강압적이지 않아야 하며, 학생이 통제받는다고 느끼지 않고 관찰이나 제안의 형태로 전달될 때 더 잘 받아들인다고 합니다."
+            },
+            
+            // 7장
+            {
+                chapter: "7장 확장 및 적용하기",
+                question: "36. 새로운 정보를 자신의 개인적 경험이나 일상생활과 연결할 때 더 잘 기억하는 현상을 무엇이라고 하나요?",
+                options: [
+                    { value: "A", text: "자기 참조 효과" },
+                    { value: "B", text: "인지 과부하" },
+                    { value: "C", text: "새로운 불용 이론" },
+                    { value: "D", text: "골디락스 영역" },
+                    { value: "E", text: "시스템 분석" }
+                ],
+                correct: "A",
+                explanation: "'자기 참조 효과'는 새로운 학습을 자신이나 개인적 경험에 연관시키는 것이 기억에 강력한 영향을 미친다는 이론입니다."
+            },
+            {
+                chapter: "7장 확장 및 적용하기",
+                question: "37. 학습 내용에 대해 '어떻게', '왜', '만약에 ~하면 어떻게 하나'와 같은 질문을 스스로 던져 장기기억을 강화하는 전략은 무엇인가요?",
+                options: [
+                    { value: "A", text: "정교화 질문 (정교화 시연)" },
+                    { value: "B", text: "자기 설명" },
+                    { value: "C", text: "비판적 사고" },
+                    { value: "D", text: "메타인지" },
+                    { value: "E", text: "사실 확인 질문" }
+                ],
+                correct: "A",
+                explanation: "'정교화 질문'은 '어떻게', '왜'와 같은 질문을 스스로에게 던져, 기억하고자 하는 정보를 이미 알고 있는 정보와 연결하고 장기기억을 재조직하는 활동입니다."
+            },
+            {
+                chapter: "7장 확장 및 적용하기",
+                question: "38. '자기 설명'이 특히 효과적인 학습 유형은 무엇인가요?",
+                options: [
+                    { value: "A", text: "사실적 지식 암기" },
+                    { value: "B", text: "기술 기반 학습 (절차적 지식), 예: 퍼즐 풀이" },
+                    { value: "C", text: "예술 감상" },
+                    { value: "D", text: "역사 연도 외우기" },
+                    { value: "E", text: "단순 읽기" }
+                ],
+                correct: "B",
+                explanation: "자기 설명(각 과정의 단계와 이유를 소리 내어 설명)은 특히 기술 기반 학습(절차적 지식)의 기억 저장과 학습 전이에 효과적이라는 사실이 밝혀졌습니다."
+            },
+            {
+                chapter: "7장 확장 및 적용하기",
+                question: "39. 대니얼 윌링햄에 따르면 '비판적 사고'의 특징은 무엇인가요?",
+                options: [
+                    { value: "A", text: "한 번 배우면 모든 분야에 적용되는 '일반적인 기술'이다." },
+                    { value: "B", text: "해당 분야의 '깊은 지식(인지 모형)'이 있어야만 가능하다." },
+                    { value: "C", text: "지식 없이도 누구나 할 수 있다." },
+                    { value: "D", text: "과학 분야에서만 배울 수 있다." },
+                    { value: "E", text: "저절로 발달하므로 가르칠 필요가 없다." }
+                ],
+                correct: "B",
+                explanation: "비판적 사고는 일반적인 기술이 아니며, 특정 영역이나 분야에 대한 '깊은 지식'이 있어야만 비판적 사고를 할 수 있다고 합니다. '비판적 사고를 위해서는 우선 그것에 대해 충분히 알아야 함'이 핵심입니다."
+            },
+            {
+                chapter: "7장 확장 및 적용하기",
+                question: "40. 학생들이 '인지 과부하'에 빠질 수 있어 주의해야 할 학습 방법은 무엇인가요?",
+                options: [
+                    { value: "A", text: "교사의 명확하고 강력한 지도" },
+                    { value: "B", text: "기본적인 인지 모형 없이 복잡한 문제를 스스로 발견하게 하는 '발견학습'" },
+                    { value: "C", text: "풀이된 예제 제공" },
+                    { value: "D", text: "정교화 질문하기" },
+                    { value: "E", text: "요약 서술 글쓰기" }
+                ],
+                correct: "B",
+                explanation: "학생들에게 인지 모형이 부족한 상태에서 복잡한 문제를 스스로 발견하게 하면, 문제 해결 노력과 방법 탐색 사이에서 '인지 과부하'가 발생하여 오히려 역효과를 낼 수 있습니다."
+            },
+
+            // 8장
+            {
+                chapter: "8장 앞으로 나아갈 방향",
+                question: "41. 전문가와 초보자를 구별하는 주요 요소는 무엇인가요?",
+                options: [
+                    { value: "A", text: "타고난 지능 지수" },
+                    { value: "B", text: "잘 발달된 인지 모형" },
+                    { value: "C", text: "빠른 정보 검색 능력" },
+                    { value: "D", text: "외적 동기" },
+                    { value: "E", text: "운" }
+                ],
+                correct: "B",
+                explanation: "잘 발달된 인지 모형은 전문가와 초보자를 구별하는 주요 요소이며, 전문가는 이 모형을 활용하여 문제를 진단하고 해결합니다."
+            },
+            {
+                chapter: "8장 앞으로 나아갈 방향",
+                question: "42. 6단계 학습 모형의 적용에 대한 설명으로 올바른 것은?",
+                options: [
+                    { value: "A", text: "학습은 선형적이므로 1~6단계를 순서대로 한 번만 거쳐야 한다." },
+                    { value: "B", text: "학습은 복잡하고 반복적이므로 6단계가 모두 필수적이지만 순서가 고정된 것은 아니다." },
+                    { value: "C", text: "모든 수업에 6단계를 전부 포함해야 한다." },
+                    { value: "D", text: "이 모형은 교사만 알고 있어야 하며 학생에게 가르치면 안 된다." },
+                    { value: "E", text: "확장 및 적용 단계는 단 한 번만 하면 된다." }
+                ],
+                correct: "B",
+                explanation: "FAQ 섹션에서 학습이 선형적이지 않으며, 6단계가 모두 필수적이지만 순서가 고정될 필요는 없다고 설명합니다. 또한 학생들에게 모형을 가르쳐도 좋다고 합니다."
+            },
+            {
+                chapter: "8장 앞으로 나아갈 방향",
+                question: "43. 8장에서 학습을 촉진하는 가장 강력한 요인으로 언급된 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "도파민" },
+                    { value: "B", text: "경쟁" },
+                    { value: "C", text: "호기심" },
+                    { value: "D", text: "외적 보상" },
+                    { value: "E", text: "엄격한 시간 관리" }
+                ],
+                correct: "C",
+                explanation: "학습을 촉진하는 가장 강력한 요인은 '호기심'이며, 호기심은 뇌를 학습에 최적화하고 지식의 공백을 메울 때 도파민이 분비된다고 설명합니다."
+            },
+            {
+                chapter: "8장 앞으로 나아갈 방향",
+                question: "44. 존 메디나가 '뇌가 잘할 수 있는 것과 정반대되는 교육 환경'으로 비유한 것은 무엇인가요?",
+                options: [
+                    { value: "A", text: "체육관" },
+                    { value: "B", text: "도서관" },
+                    { value: "C", text: "온라인 게임" },
+                    { value: "D", text: "현실의 교실" },
+                    { value: "E", text: "놀이터" }
+                ],
+                correct: "D",
+                explanation: "존 메디나는 현실의 교실이 뇌가 본래 학습하는 방식과 정반대(예: 지루한 과제, 처리할 시간 부족)로 설계되었을 수 있다고 비판합니다."
+            },
+            {
+                chapter: "8장 앞으로 나아갈 방향",
+                question: "45. 이 책의 저자가 6단계 학습 모형을 제공하는 궁극적인 목표는 무엇인가요?",
+                options: [
+                    { value: "A", text: "모든 교사가 동일한 수업을 하도록 표준화하는 것" },
+                    { value: "B", text: "학생들의 타고난 학습 능력과 호기심을 이끌어내어 교육 상황을 개선하는 것" },
+                    { value: "C", text: "교사들이 더 쉽게 진도를 나갈 수 있도록 돕는 것" },
+                    { value: "D", text: "시험 성적만 올리는 비법을 제공하는 것" },
+                    { value: "E", text: "학생들을 '스스로 동기 부여된 학습'에서 벗어나게 하는 것" }
+                ],
+                correct: "B",
+                explanation: "이 책의 목표는 뇌가 자연스럽게 학습하는 방식을 반영하여, 학생들의 타고난 학습 능력과 학습에 대한 욕구(호기심)를 이끌어 낼 수 있는 모형을 제공함으로써 현재의 교육 상황을 개선하는 것입니다."
+            }
+        ];
+
+        const quizForm = document.getElementById('quizForm');
+        const resultsDiv = document.getElementById('results');
+        let currentChapter = "";
+
+        // 퀴즈 문항 HTML 생성
+        function buildQuiz() {
+            quizData.forEach((item, index) => {
+                // 챕터 제목 표시
+                if (item.chapter !== currentChapter) {
+                    currentChapter = item.chapter;
+                    const chapterHeader = document.createElement('h2');
+                    chapterHeader.className = "text-2xl font-bold text-blue-800 mt-10 mb-6 pb-2 border-b-2 border-blue-200";
+                    chapterHeader.textContent = currentChapter;
+                    quizForm.appendChild(chapterHeader);
+                }
+
+                // 문제 컨테이너
+                const questionDiv = document.createElement('div');
+                questionDiv.className = "mb-8 bg-white p-6 rounded-lg shadow-md border border-gray-200";
+                questionDiv.id = `question-${index}`;
+
+                // 질문
+                const questionP = document.createElement('p');
+                questionP.className = "text-xl font-semibold text-gray-800 mb-5";
+                questionP.textContent = item.question;
+                questionDiv.appendChild(questionP);
+
+                // 선택지
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = "space-y-3";
+                
+                item.options.forEach(option => {
+                    const optionContainer = document.createElement('div');
+                    
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.name = `question${index}`;
+                    radioInput.value = option.value;
+                    radioInput.id = `q${index}_${option.value}`;
+                    radioInput.className = "hidden"; // 라디오 버튼 숨기기
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `q${index}_${option.value}`;
+                    label.textContent = `${option.value}. ${option.text}`;
+                    label.className = "block w-full p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-all duration-200";
+
+                    optionContainer.appendChild(radioInput);
+                    optionContainer.appendChild(label);
+                    optionsDiv.appendChild(optionContainer);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+
+                // 피드백 (해설) 영역
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.id = `feedback-${index}`;
+                feedbackDiv.className = "feedback mt-4 p-4 rounded-lg";
+                // 내용은 채점 시 채워짐
+                questionDiv.appendChild(feedbackDiv);
+
+                quizForm.appendChild(questionDiv);
+            });
+        }
+
+        // 폼 제출 시 채점
+        function handleSubmit(event) {
+            event.preventDefault(); // 폼 기본 제출 방지
+
+            let score = 0;
+            const formData = new FormData(quizForm);
+
+            // 모든 피드백 영역 초기화
+            document.querySelectorAll('.feedback').forEach(fb => {
+                fb.style.display = 'none';
+                fb.classList.remove('bg-red-100', 'text-red-800', 'border-red-300', 'bg-green-100', 'text-green-800', 'border-green-300');
+                fb.innerHTML = '';
+            });
+
+            // 각 문제 채점
+            quizData.forEach((item, index) => {
+                const questionDiv = document.getElementById(`question-${index}`);
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                const selectedOption = formData.get(`question${index}`);
+                const correctOption = item.correct;
+
+                // 선택된 라벨과 정답 라벨 찾기
+                const labels = questionDiv.querySelectorAll('label');
+                labels.forEach(label => {
+                    label.classList.remove('border-green-500', 'bg-green-100', 'border-red-500', 'bg-red-100');
+                    label.classList.add('border-gray-300'); // 기본 테두리로 리셋
+                });
+
+                const correctLabel = questionDiv.querySelector(`label[for="q${index}_${correctOption}"]`);
+
+                if (selectedOption) {
+                    const selectedLabel = questionDiv.querySelector(`label[for="q${index}_${selectedOption}"]`);
+                    
+                    if (selectedOption === correctOption) {
+                        // 정답
+                        score++;
+                        selectedLabel.classList.add('border-green-500', 'bg-green-100');
+                        selectedLabel.classList.remove('border-gray-300');
+                    } else {
+                        // 오답
+                        selectedLabel.classList.add('border-red-500', 'bg-red-100');
+                        selectedLabel.classList.remove('border-gray-300');
+                        
+                        // 정답 표시
+                        correctLabel.classList.add('border-green-500', 'bg-green-100');
+                        correctLabel.classList.remove('border-gray-300');
+
+                        // 해설 표시
+                        feedbackDiv.style.display = 'block';
+                        feedbackDiv.className = "feedback mt-4 p-4 rounded-lg bg-red-100 text-red-800 border border-red-300";
+                        feedbackDiv.innerHTML = `
+                            <p class="font-bold">틀렸습니다.</p>
+                            <p><span class="font-semibold">정답:</span> ${correctOption}</p>
+                            <p><span class="font-semibold">해설:</span> ${item.explanation}</p>
+                        `;
+                    }
+                } else {
+                    // 선택 안 함
+                    correctLabel.classList.add('border-green-500', 'bg-green-100');
+                    correctLabel.classList.remove('border-gray-300');
+
+                    feedbackDiv.style.display = 'block';
+                    feedbackDiv.className = "feedback mt-4 p-4 rounded-lg bg-yellow-100 text-yellow-800 border border-yellow-300";
+                    feedbackDiv.innerHTML = `
+                        <p class="font-bold">선택하지 않은 문제입니다.</p>
+                        <p><span class="font-semibold">정답:</span> ${correctOption}</p>
+                        <p><span class="font-semibold">해설:</span> ${item.explanation}</p>
+                    `;
+                }
+            });
+
+            // 최종 점수 표시
+            const totalQuestions = quizData.length;
+            const percentage = Math.round((score / totalQuestions) * 100);
+            
+            resultsDiv.innerHTML = `총 ${totalQuestions}문제 중 <span class="text-blue-700">${score}</span>문제를 맞혔습니다! (정답률: ${percentage}%)`;
+            resultsDiv.classList.remove('hidden');
+
+            // 결과 화면으로 스크롤
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // 퀴즈 생성 및 이벤트 리스너 등록
+        document.addEventListener('DOMContentLoaded', buildQuiz);
+        quizForm.addEventListener('submit', handleSubmit);
+
+    </script>
+</body>
+</html>
+
